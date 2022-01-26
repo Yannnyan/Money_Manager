@@ -1,8 +1,12 @@
 package GUI;
 import javax.swing.JFrame;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class FrameClass {
+    JFrame frame;
 
     public static void main(String[] args){
         new FrameClass();
@@ -10,9 +14,12 @@ public class FrameClass {
 
 
     public FrameClass(){
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setSize(700,500);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        //frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+
+
         Container container = frame.getContentPane();
         GridBagLayout gridBagLayout = new GridBagLayout();
         container.setLayout(gridBagLayout);
@@ -33,6 +40,17 @@ public class FrameClass {
 
         frame.setVisible(true);
 
+
+        // dispose all frames
+        WindowListener windowListener = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                panel.close();
+                //super.windowClosing(e);
+                frame.dispose();
+            }
+        };
+        frame.addWindowListener(windowListener);
     }
 
 
