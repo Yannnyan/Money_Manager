@@ -7,94 +7,88 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.xml.security.Init;
 
-import java.io.FileInputStream;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class excel {
+    private static final int Table_Width = 31;
+    private static final int Table_Height = 5;
+    private static final int margin = 2;
     private static File file = new File("C:\\Users\\Alex\\Desktop\\Money_Manager\\workbook.XLS");
     private static XSSFWorkbook workbook = null;
     private static XSSFSheet sheet = null;
 
 
-    public static void InitWorkbook(){
-        try{
-            if(!file.exists()){
-                workbook = new XSSFWorkbook();
-                sheet = workbook.createSheet("Sheet 1");
-            }
-            else {
+
+    public static void Init_Book(){
+        if(!file.exists()){
+            workbook = new XSSFWorkbook();
+            sheet = workbook.createSheet("Sheet 1");
+        }
+        else {
+            try{
                 FileInputStream FIS = new FileInputStream(file);
                 workbook = new XSSFWorkbook(FIS);
                 sheet = workbook.getSheetAt(0);
             }
-        }
-        catch (IOException e){
-            System.out.println("Error cannot create workbook " + e.getMessage());
+            catch (IOException e){
+                System.out.println("Cannot read from xls");
+            }
         }
     }
-    public static void WriteToExcel(int Month, int Day, String str){
+
+    /**
+     *
+     * This function supposed to create a new table with respect to the existing tables in the sheet
+     *
+     * @param month
+     * @return The new table created
+     */
+
+    private static XSSFTable create_Table(int month){
+        int TLRow = sheet.getLastRowNum() + margin;
+        int TLColumn = sheet.getRow(TLRow).getFirstCellNum();
+        CellReference TL = new CellReference(TLRow,TLColumn);
+        CellReference BR = new CellReference(TLRow + Table_Height, TLColumn + Table_Width);
+        XSSFTable table = sheet.createTable(new AreaReference(TL,BR,workbook.getSpreadsheetVersion()));
+        table.setName("" + month);
+        XSSFRow topRow =  sheet.getRow(TLRow);
+        for (int i = 0; i < Table_Width; i++) {
+            table.createColumn("Day " + i);
+//           topRow.createCell(i);
+//           topRow.getCell(i).setCellValue("Day " + i);
+        }
+        return table;
+    }
+    private static XSSFTable get_Table(int month){
+        for(XSSFTable table : sheet.getTables().stream().toList()){
+            if( table.getName().equals("" + month))
+                return table;
+        }
+        return null;
+    }
+    /**
+    * This function designed to be a black box for the other classes to call and write
+     *   into cell without any other processes
+    *  */
+    public static void Write_Cell(int Year, int Month, int Day, String toWrite){
         if(workbook == null)
-            return;
-        AreaReference areaReference = new AreaReference(new CellReference(5,3), new CellReference(10,8), workbook.getSpreadsheetVersion());
-        ArrayList<XSSFTable> tables = (ArrayList) sheet.getTables();
-        XSSFTable table = null;
-        if(tables.size() < 1) {
-            table = sheet.createTable(areaReference);
-            table.setName("Hello my friend");
-        }
-        else
-            table = tables.get(0);
-        WriteToTable(table);
-        tables = (ArrayList<XSSFTable>) sheet.getTables();
-        tables.forEach((table1) ->{System.out.println("Table is :" + table1.getName());});
-        WriteSheet();
+            Init_Book();
+        XSSFTable thisTable = get_Table(Month);
+        if(thisTable == null)
+            thisTable = create_Table(Month);
+        ArrayList<XSSFTableColumn> columns = (ArrayList<XSSFTableColumn>) thisTable.getColumns();
+        int col = thisTable.findColumnIndex("Day "+ Day);
+        for (XSSFTableColumn column: columns) {
+            if(column.getName().equals("Day " + Day)){
 
-    }
-    private static void WriteToTable(XSSFTable table){
-        XSSFRow row = null;
-        XSSFCell cell = null;
-        for (int i = table.getStartRowIndex(); i < table.getEndRowIndex(); i++) {
-            if(sheet.getRow(i) == null)
-                sheet.createRow(i);
-            row = sheet.getRow(i);
-            for (int j = table.getStartColIndex(); j < table.getEndColIndex(); j++) {
-                if(row.getCell(j) == null)
-                    row.createCell(j);
-                cell = row.getCell(j);
-                cell.setCellValue("cel " + j);
             }
-        }
-    }
-    private static void ReadFromTable(XSSFTable table){
-        for (int i=table.getStartRowIndex(); i < table.getEndRowIndex(); i++) {
-            for (int j = table.getStartColIndex(); j < table.getEndColIndex(); j++) {
-                System.out.println(sheet.getRow(i).getCell(j).getStringCellValue());
-            }
-        }
-    }
-    private static void WriteSheet(){
-        try {
-            FileOutputStream FOS = new FileOutputStream(file);
-            workbook.write(FOS);
-            workbook.close();
-        }
-        catch (IOException e){
-            System.out.println("Cant write sheet");
+
         }
 
     }
-    public static void main(String[] args){
-        InitWorkbook();
-        WriteToExcel(10,2,"Hello world");
-        Iterator<XSSFTable> iterator = sheet.getTables().iterator();
-        while(iterator.hasNext()) {
-            ReadFromTable(iterator.next());
-        }
 
-    }
+
 }
