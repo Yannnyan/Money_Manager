@@ -33,7 +33,7 @@ public class FrameClass {
         constraints.anchor = GridBagConstraints.FIRST_LINE_START;
         constraints.fill = GridBagConstraints.BOTH;
         frame.setLocationRelativeTo(null);
-        PanelClass panel = new PanelClass();
+        final PanelClass panel = new PanelClass();
         container.add(panel, constraints);
 
        // panel.setVisible(true);
