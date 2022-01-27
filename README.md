@@ -1,2 +1,12 @@
 # Money_Manager
-Repository contains a java GUI project representing a UI. Its created to help me manage and track my expenses.
+
+> <h3>The idea behind the project</h3>
+> Make a user comfortable application to update, delete, add, and view data which is simply the expenses of a person. </br>
+
+## My idea to implement this project
+* Create a GUI using swing with some look and feel features, mainly purposed to take input from the user </br>
+* Store the data from the user in excel sheets, used later to plot the tables of given months into graphs and pie graphs. </br>
+
+
+
+
