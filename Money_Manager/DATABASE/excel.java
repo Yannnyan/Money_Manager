@@ -16,30 +16,44 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class excel {
-    private static File file = new File("C:\\Users\\Alex\\Desktop\\Money_Manager\\workbook.xls");
+    private static File file = new File("C:\\Users\\Alex\\Desktop\\Money_Manager\\workbook.XLS");
     private static XSSFWorkbook workbook = null;
     private static XSSFSheet sheet = null;
 
 
-
     public static void InitWorkbook(){
         try{
-            FileInputStream FIS = new FileInputStream(file);
-            workbook = new XSSFWorkbook(FIS);
-            sheet = workbook.getSheetAt(0);
+            if(!file.exists()){
+                workbook = new XSSFWorkbook();
+                sheet = workbook.createSheet("Sheet 1");
+            }
+            else {
+                FileInputStream FIS = new FileInputStream(file);
+                workbook = new XSSFWorkbook(FIS);
+                sheet = workbook.getSheetAt(0);
+            }
         }
         catch (IOException e){
-            System.out.println("Error cannot create workbook");
+            System.out.println("Error cannot create workbook " + e.getMessage());
         }
     }
     public static void WriteToExcel(int Month, int Day, String str){
-        AreaReference areaReference = new AreaReference(new CellReference(0,0), new CellReference(1,1), workbook.getSpreadsheetVersion());
-        XSSFTable table = sheet.createTable(areaReference);
-        table.setName("Hello my friend");
+        if(workbook == null)
+            return;
+        AreaReference areaReference = new AreaReference(new CellReference(5,3), new CellReference(10,8), workbook.getSpreadsheetVersion());
+        ArrayList<XSSFTable> tables = (ArrayList) sheet.getTables();
+        XSSFTable table = null;
+        if(tables.size() < 1) {
+            table = sheet.createTable(areaReference);
+            table.setName("Hello my friend");
+        }
+        else
+            table = tables.get(0);
         WriteToTable(table);
-        ArrayList<XSSFTable> tables = (ArrayList<XSSFTable>) sheet.getTables();
+        tables = (ArrayList<XSSFTable>) sheet.getTables();
         tables.forEach((table1) ->{System.out.println("Table is :" + table1.getName());});
         WriteSheet();
+
     }
     private static void WriteToTable(XSSFTable table){
         XSSFRow row = null;
