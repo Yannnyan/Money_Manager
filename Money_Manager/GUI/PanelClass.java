@@ -1,20 +1,22 @@
 package GUI;
+import CONSTANTS.Constants;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import static CONSTANTS.Constants.*;
 
 public class PanelClass extends JPanel  implements ActionListener {
     GridBagConstraints constraints;
-    JButton popUpButton;
+    JButton writeDataButton, deleteLastDataButton, viewDataButton;
     JTextArea textArea;
+    myJTable myTable = new myJTable();
     popUpDialog popUpDialog_obj;
     public PanelClass(){
         this.constraints = new GridBagConstraints();
@@ -29,52 +31,63 @@ public class PanelClass extends JPanel  implements ActionListener {
     }
 
 
-
+    /**
+     *  ACTION LISTENERS: <br>
+     *  INSERT DATA BUTTON = 1 <br>
+     *  DELETE DATA BUTTON = 2 <br>
+     *  VIEW DATA BUTTON = 3 <br>
+     *
+     *
+     *
+     */
     private void add_stuff_to_Panel(){
-        this.popUpButton = new JButton();
-        Font font = new Font("insert",Font.ITALIC,10);
-        this.popUpButton.setFont(font);
-        this.popUpButton.setBackground(Color.BLACK);
-        this.popUpButton.setForeground(Color.GREEN);
-        this.popUpButton.setText("INSERT DATA");
-        this.popUpButton.addActionListener(this);
-        this.popUpButton.setActionCommand("1");
-        this.popUpButton.setSize(100,50);
 
-        this.constraints.gridx=0;
-        this.constraints.gridy=0;
-        this.constraints.weightx = 0.5;
-        this.constraints.weighty = 0.5;
-        this.constraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        this.constraints.fill = GridBagConstraints.FIRST_LINE_START;
-        this.add(popUpButton,constraints);
+        //////////////////////// BUTTONS ///////////////////////
+        this.writeDataButton = myJButtonFactory.getmyJButton("INSERT DATA",1);
+        this.writeDataButton.addActionListener(this);
+        this.constraints = myConstraintsFactory.getGridBagConstraints(0,0,0.5f,0.5f,
+                GridBagConstraints.FIRST_LINE_START,GridBagConstraints.FIRST_LINE_START);
+        this.add(writeDataButton,constraints);
 
+
+        this.deleteLastDataButton = myJButtonFactory.getmyJButton("DELETE LAST",2);
+        this.deleteLastDataButton.addActionListener(this);
+        this.constraints = myConstraintsFactory.getGridBagConstraints(0,1,0.5f,0.5f,
+                GridBagConstraints.FIRST_LINE_START,GridBagConstraints.FIRST_LINE_START);
+        this.add(deleteLastDataButton,constraints);
+
+        this.viewDataButton = myJButtonFactory.getmyJButton("VIEW DATA", 3);
+        this.viewDataButton.addActionListener(this);
+        this.constraints = myConstraintsFactory.getGridBagConstraints(0,2,0.5f,0.5f,
+                GridBagConstraints.FIRST_LINE_START,GridBagConstraints.FIRST_LINE_START);
+        this.add(viewDataButton,constraints);
+
+        /////////////////////////////  TEXT AREAS /////////////////////////
         this.textArea = new JTextArea();
-        this.textArea.setFont(font);
-        this.textArea.setPreferredSize(new Dimension(100,50));
+        this.textArea.setFont(new Font("areaTextFont",Font.ITALIC,10));
+        this.textArea.setPreferredSize(new Dimension(100,150));
         this.textArea.setBackground(Color.black);
-        this.textArea.setLocation(100,0);
         this.textArea.setForeground(Color.ORANGE);
 
         //this.textArea.setVisible(true);
 
-        this.constraints.gridx=1;
-        this.constraints.gridy=0;
-        this.constraints.weightx = 0.5;
-        this.constraints.weighty = 0.5;
-        this.constraints.anchor = GridBagConstraints.LAST_LINE_END;
-        this.constraints.fill = GridBagConstraints.FIRST_LINE_START;
+        this.constraints = myConstraintsFactory.getGridBagConstraints(0,3,0.5f,0.5f,
+                GridBagConstraints.LAST_LINE_END,GridBagConstraints.FIRST_LINE_START);
+        this.add(textArea,constraints);
 
-        add(textArea,constraints);
 
+        //////////////////////////// Table //////////////////////////
+        this.constraints = myConstraintsFactory.getGridBagConstraints(1,2,0.5f, 0.5f,
+                GridBagConstraints.FIRST_LINE_START,GridBagConstraints.FIRST_LINE_START);
+        this.myTable.getTable().setVisible(false);
+        add(myTable.getTable(),constraints);
     }
     // paint stuff here:
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        g.drawString("Hello world", 0, 100);
         try {
-            final BufferedImage bgImage = ImageIO.read(new File("C:\\Users\\Alex\\Desktop\\Money_Manager\\Money_Manager\\IMAGES\\wallstreet1.jpg"));
+            final BufferedImage bgImage = ImageIO.read(new File("Money_Manager\\IMAGES\\wallstreet1.jpg"));
             g.drawImage(bgImage, this.getX(), this.getY(), this.getWidth(), this.getHeight(), this);
 
         }
@@ -83,7 +96,7 @@ public class PanelClass extends JPanel  implements ActionListener {
         }
     }
     public void appendTextArea(String str){
-        if(Adapter.getWriteCounter() >= 3){
+        if(Adapter.getWriteCounter() >= 10){
             Adapter.resetCounterWrites();
             this.textArea.setText("");
         }
@@ -127,6 +140,21 @@ public class PanelClass extends JPanel  implements ActionListener {
                     this.OpenPopUp();
                 }
                 break;
+            case 2:
+                break;
+            case 3:
+                if(!Adapter.isTableVisible()){
+                    Adapter.showTable();
+                    this.myTable.getTable().setVisible(true);
+                    this.repaint();
+
+                }
+                if(Adapter.isTableVisible()){
+                    Adapter.closeTable();
+                    this.myTable.getTable().setVisible(false);
+                    this.repaint();
+
+                }
         }
     }
 }
