@@ -71,7 +71,7 @@ public class PanelClass extends JPanel  implements ActionListener {
 
         //this.textArea.setVisible(true);
 
-        this.constraints = myConstraintsFactory.getGridBagConstraints(0,3,0.5f,0.5f,
+        this.constraints = myConstraintsFactory.getGridBagConstraints(1,3,0.5f,0.5f,
                 GridBagConstraints.LAST_LINE_END,GridBagConstraints.FIRST_LINE_START);
         this.add(textArea,constraints);
 
@@ -79,8 +79,8 @@ public class PanelClass extends JPanel  implements ActionListener {
         //////////////////////////// Table //////////////////////////
         this.constraints = myConstraintsFactory.getGridBagConstraints(1,2,0.5f, 0.5f,
                 GridBagConstraints.FIRST_LINE_START,GridBagConstraints.FIRST_LINE_START);
-        this.myTable.getTable().setVisible(false);
-        add(myTable.getTable(),constraints);
+        this.myTable.setVisible(true);
+        this.add(myTable.getTable(),constraints);
     }
     // paint stuff here:
     @Override
@@ -145,13 +145,13 @@ public class PanelClass extends JPanel  implements ActionListener {
             case 3:
                 if(!Adapter.isTableVisible()){
                     Adapter.showTable();
-                    this.myTable.getTable().setVisible(true);
+                    this.myTable.setVisible(true);
                     this.repaint();
-
+                    new popUpTable(this.myTable);
                 }
-                if(Adapter.isTableVisible()){
+                else if(Adapter.isTableVisible()){
                     Adapter.closeTable();
-                    this.myTable.getTable().setVisible(false);
+                    this.myTable.setVisible(false);
                     this.repaint();
 
                 }

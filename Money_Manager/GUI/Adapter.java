@@ -3,7 +3,7 @@ package GUI;
 public class Adapter {
     private static boolean popupOpen = false;
     private static int counter_Writes = 0;
-    private static boolean TableVisible = false;
+    private static boolean TableVisible = true;
 
     public static void resetCounterWrites(){
         counter_Writes = 0;
